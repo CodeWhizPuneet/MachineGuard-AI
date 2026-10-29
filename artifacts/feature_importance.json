@@ -1,0 +1,38 @@
+{
+  "native_tree_importance": {
+    "Torque [Nm]": 0.3966,
+    "Air temperature [K]": 0.1611,
+    "Tool wear [min]": 0.1564,
+    "Rotational speed [rpm]": 0.1471,
+    "Process temperature [K]": 0.0987,
+    "Type_L": 0.0285,
+    "Type_H": 0.0088,
+    "Type_M": 0.0028
+  },
+  "permutation_importance_validation": {
+    "Torque [Nm]": {
+      "importance_mean": 0.6318,
+      "importance_std": 0.0045
+    },
+    "Air temperature [K]": {
+      "importance_mean": 0.29644,
+      "importance_std": 0.01332
+    },
+    "Tool wear [min]": {
+      "importance_mean": 0.28562,
+      "importance_std": 0.03566
+    },
+    "Process temperature [K]": {
+      "importance_mean": 0.25247,
+      "importance_std": 0.02875
+    },
+    "Rotational speed [rpm]": {
+      "importance_mean": 0.19393,
+      "importance_std": 0.00608
+    },
+    "Type": {
+      "importance_mean": 0.02856,
+      "importance_std": 0.01064
+    }
+  }
+}

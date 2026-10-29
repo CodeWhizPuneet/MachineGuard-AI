@@ -1,0 +1,78 @@
+{
+  "project_name": "MachineGuard AI",
+  "model_name": "Gradient Boosting",
+  "training_timestamp": "2026-10-29T00:09:25Z",
+  "random_seed": 42,
+  "selected_threshold": 0.475,
+  "threshold_rationale": "Threshold 0.475 selected by maximizing F1-score (0.7423) on held-out validation data. Achieves recall=0.6667 with 7 false alarms out of 1600 machines.",
+  "hyperparameters": {
+    "subsample": 0.8,
+    "n_estimators": 100,
+    "max_depth": 5,
+    "learning_rate": 0.05
+  },
+  "feature_schema": {
+    "categorical": [
+      "Type"
+    ],
+    "numerical": [
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]"
+    ],
+    "all_predictors": [
+      "Type",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]"
+    ],
+    "transformed_names": [
+      "Type_L",
+      "Type_M",
+      "Type_H",
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]"
+    ]
+  },
+  "dataset_split": {
+    "train_samples": 6400,
+    "train_failures": 217,
+    "val_samples": 1600,
+    "val_failures": 54,
+    "test_samples": 2000,
+    "test_failures": 68
+  },
+  "calibration": {
+    "prob_true": [
+      0.0092,
+      0.04,
+      0.3333,
+      0.2,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      0.8571,
+      0.95
+    ],
+    "prob_pred": [
+      0.006,
+      0.1522,
+      0.2382,
+      0.3437,
+      0.48,
+      0.5475,
+      0.6694,
+      0.7531,
+      0.8653,
+      0.9732
+    ]
+  }
+}

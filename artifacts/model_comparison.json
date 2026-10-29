@@ -1,0 +1,303 @@
+{
+  "Dummy Classifier (Baseline)": {
+    "algorithm": "Dummy Classifier (Baseline)",
+    "description": "Stratified random guessing baseline reflecting dataset class prior.",
+    "best_hyperparameters": {},
+    "cv_train_average_precision": 0.0,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 0.0271,
+      "recall": 0.0276,
+      "f1_score": 0.0274,
+      "average_precision": 0.0337,
+      "roc_auc": 0.4964,
+      "balanced_accuracy": 0.4964,
+      "confusion_matrix": {
+        "true_negatives": 5968,
+        "false_positives": 215,
+        "false_negatives": 211,
+        "true_positives": 6
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0348,
+        "miss_rate_fnr": 0.9724
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.0526,
+      "recall": 0.0556,
+      "f1_score": 0.0541,
+      "average_precision": 0.0348,
+      "roc_auc": 0.5103,
+      "balanced_accuracy": 0.5103,
+      "confusion_matrix": {
+        "true_negatives": 1492,
+        "false_positives": 54,
+        "false_negatives": 51,
+        "true_positives": 3
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0349,
+        "miss_rate_fnr": 0.9444
+      }
+    },
+    "generalization_gap_ap": -0.0011,
+    "overfitting_risk": "Low"
+  },
+  "Logistic Regression": {
+    "algorithm": "Logistic Regression",
+    "description": "Linear classifier with L2 regularization and class weight adjustments.",
+    "best_hyperparameters": {
+      "solver": "liblinear",
+      "class_weight": null,
+      "C": 1.0
+    },
+    "cv_train_average_precision": 0.4544,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 0.75,
+      "recall": 0.1935,
+      "f1_score": 0.3077,
+      "average_precision": 0.4589,
+      "roc_auc": 0.8986,
+      "balanced_accuracy": 0.5956,
+      "confusion_matrix": {
+        "true_negatives": 6169,
+        "false_positives": 14,
+        "false_negatives": 175,
+        "true_positives": 42
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0023,
+        "miss_rate_fnr": 0.8065
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.7692,
+      "recall": 0.1852,
+      "f1_score": 0.2985,
+      "average_precision": 0.4551,
+      "roc_auc": 0.8926,
+      "balanced_accuracy": 0.5916,
+      "confusion_matrix": {
+        "true_negatives": 1543,
+        "false_positives": 3,
+        "false_negatives": 44,
+        "true_positives": 10
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0019,
+        "miss_rate_fnr": 0.8148
+      }
+    },
+    "generalization_gap_ap": 0.0038,
+    "overfitting_risk": "Low"
+  },
+  "Random Forest": {
+    "algorithm": "Random Forest",
+    "description": "Ensemble of decision trees with bagging, depth limits, and class weighting.",
+    "best_hyperparameters": {
+      "n_estimators": 100,
+      "min_samples_split": 2,
+      "min_samples_leaf": 2,
+      "max_depth": 10,
+      "class_weight": "balanced"
+    },
+    "cv_train_average_precision": 0.6624,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 0.6781,
+      "recall": 1.0,
+      "f1_score": 0.8082,
+      "average_precision": 0.9954,
+      "roc_auc": 0.9998,
+      "balanced_accuracy": 0.9917,
+      "confusion_matrix": {
+        "true_negatives": 6080,
+        "false_positives": 103,
+        "false_negatives": 0,
+        "true_positives": 217
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0167,
+        "miss_rate_fnr": 0.0
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.4744,
+      "recall": 0.6852,
+      "f1_score": 0.5606,
+      "average_precision": 0.5932,
+      "roc_auc": 0.9594,
+      "balanced_accuracy": 0.8293,
+      "confusion_matrix": {
+        "true_negatives": 1505,
+        "false_positives": 41,
+        "false_negatives": 17,
+        "true_positives": 37
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0265,
+        "miss_rate_fnr": 0.3148
+      }
+    },
+    "generalization_gap_ap": 0.4022,
+    "overfitting_risk": "High"
+  },
+  "Extra Trees": {
+    "algorithm": "Extra Trees",
+    "description": "Extremely Randomized Trees with random thresholds for variance reduction.",
+    "best_hyperparameters": {
+      "n_estimators": 150,
+      "min_samples_split": 5,
+      "max_depth": null,
+      "class_weight": null
+    },
+    "cv_train_average_precision": 0.6862,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 1.0,
+      "recall": 0.9078,
+      "f1_score": 0.9517,
+      "average_precision": 0.9999,
+      "roc_auc": 1.0,
+      "balanced_accuracy": 0.9539,
+      "confusion_matrix": {
+        "true_negatives": 6183,
+        "false_positives": 0,
+        "false_negatives": 20,
+        "true_positives": 197
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0,
+        "miss_rate_fnr": 0.0922
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.9524,
+      "recall": 0.3704,
+      "f1_score": 0.5333,
+      "average_precision": 0.7397,
+      "roc_auc": 0.954,
+      "balanced_accuracy": 0.6849,
+      "confusion_matrix": {
+        "true_negatives": 1545,
+        "false_positives": 1,
+        "false_negatives": 34,
+        "true_positives": 20
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0006,
+        "miss_rate_fnr": 0.6296
+      }
+    },
+    "generalization_gap_ap": 0.2602,
+    "overfitting_risk": "Moderate"
+  },
+  "Gradient Boosting": {
+    "algorithm": "Gradient Boosting",
+    "description": "Sequential boosting model optimizing deviance loss.",
+    "best_hyperparameters": {
+      "subsample": 0.8,
+      "n_estimators": 100,
+      "max_depth": 5,
+      "learning_rate": 0.05
+    },
+    "cv_train_average_precision": 0.7798,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 1.0,
+      "recall": 0.8802,
+      "f1_score": 0.9363,
+      "average_precision": 0.9804,
+      "roc_auc": 0.9923,
+      "balanced_accuracy": 0.9401,
+      "confusion_matrix": {
+        "true_negatives": 6183,
+        "false_positives": 0,
+        "false_negatives": 26,
+        "true_positives": 191
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0,
+        "miss_rate_fnr": 0.1198
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.8537,
+      "recall": 0.6481,
+      "f1_score": 0.7368,
+      "average_precision": 0.7687,
+      "roc_auc": 0.9753,
+      "balanced_accuracy": 0.8221,
+      "confusion_matrix": {
+        "true_negatives": 1540,
+        "false_positives": 6,
+        "false_negatives": 19,
+        "true_positives": 35
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0039,
+        "miss_rate_fnr": 0.3519
+      }
+    },
+    "generalization_gap_ap": 0.2117,
+    "overfitting_risk": "Moderate"
+  },
+  "Hist Gradient Boosting": {
+    "algorithm": "Hist Gradient Boosting",
+    "description": "Histogram-binned gradient boosting with native speed and complexity controls.",
+    "best_hyperparameters": {
+      "max_iter": 100,
+      "max_depth": 4,
+      "learning_rate": 0.2,
+      "class_weight": null
+    },
+    "cv_train_average_precision": 0.7699,
+    "train_metrics": {
+      "threshold": 0.5,
+      "precision": 1.0,
+      "recall": 0.977,
+      "f1_score": 0.9883,
+      "average_precision": 1.0,
+      "roc_auc": 1.0,
+      "balanced_accuracy": 0.9885,
+      "confusion_matrix": {
+        "true_negatives": 6183,
+        "false_positives": 0,
+        "false_negatives": 5,
+        "true_positives": 212
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0,
+        "miss_rate_fnr": 0.023
+      }
+    },
+    "val_metrics_default_0_5": {
+      "threshold": 0.5,
+      "precision": 0.7381,
+      "recall": 0.5741,
+      "f1_score": 0.6458,
+      "average_precision": 0.6892,
+      "roc_auc": 0.9741,
+      "balanced_accuracy": 0.7835,
+      "confusion_matrix": {
+        "true_negatives": 1535,
+        "false_positives": 11,
+        "false_negatives": 23,
+        "true_positives": 31
+      },
+      "rates": {
+        "false_alarm_rate_fpr": 0.0071,
+        "miss_rate_fnr": 0.4259
+      }
+    },
+    "generalization_gap_ap": 0.3108,
+    "overfitting_risk": "High"
+  }
+}

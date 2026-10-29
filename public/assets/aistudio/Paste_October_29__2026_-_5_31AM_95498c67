@@ -1,0 +1,702 @@
+# MASTER PROJECT PROMPT: MachineGuard AI
+## End-to-End Explainable Predictive Maintenance System
+
+Act as a **senior Machine Learning Engineer, Data Scientist, MLOps Engineer, and full-stack Python developer**. Build a complete, production-style academic ML project named **MachineGuard AI: Explainable Predictive Maintenance and Machine Failure Prediction**.
+
+I am a third-year CSE student specializing in AI and Machine Learning. I want to understand and demonstrate the complete ML lifecycle, from raw data to a trained model, evaluation, explainability, and cloud deployment. Build a real, working project, not merely a notebook, prototype, mock dashboard, or collection of code snippets.
+
+**Important:** Do not blindly follow my assumptions about which algorithm, features, metrics, or approach are best. Independently evaluate the problem, choose appropriate techniques, compare multiple algorithms fairly, and select the best model based on evidence. I want the strongest model that generalizes to unseen data, not an artificially impressive score.
+
+---
+
+# 1. Project objective
+
+Build an end-to-end predictive maintenance system that estimates the probability of machine failure using machine operating conditions.
+
+The system should:
+
+- Predict the probability of machine failure.
+- Classify machines as lower risk or higher risk using a configurable decision threshold.
+- Identify which operating conditions contribute most to the prediction.
+- Compare several ML algorithms and select a defensible final model.
+- Detect and minimize overfitting and data leakage.
+- Support single-machine predictions and batch predictions from CSV files.
+- Provide a clean, interactive Streamlit web application.
+- Be ready to deploy to a cloud platform such as Streamlit Community Cloud.
+- Include reproducible training, evaluation, testing, documentation, and setup instructions.
+
+Use the project name **MachineGuard AI** consistently throughout the application and documentation.
+
+## 2. Dataset
+
+Use the official **AI4I 2020 Predictive Maintenance Dataset** from the UCI Machine Learning Repository.
+
+Official source:
+https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset
+
+The dataset contains approximately 10,000 observations describing machine operating conditions, with a binary machine-failure target and additional failure-subtype indicators.
+
+Do not assume the dataset already exists on my computer. I am starting from a fresh project.
+
+Implement a reliable data acquisition workflow:
+
+1. Provide a script that downloads the dataset from its official source when possible.
+2. Verify the downloaded file and required columns.
+3. Store the dataset in the project's `data/` directory.
+4. Handle download failures with clear instructions for obtaining and placing the official CSV manually.
+5. Support uploading a compatible CSV through the application where appropriate.
+6. Do not silently substitute a different dataset or generate fake training data if downloading fails.
+7. Include dataset source, usage notes, and relevant licensing information in the README.
+
+The application must also work when the dataset has already been downloaded locally.
+
+# 3. Data understanding and preprocessing
+
+Implement a complete exploratory data analysis and preprocessing pipeline.
+
+Include:
+
+- Dataset dimensions, data types, and descriptive statistics.
+- Missing-value analysis.
+- Duplicate-row analysis.
+- Target class distribution and class-imbalance analysis.
+- Feature distributions and outlier inspection.
+- Correlation analysis where appropriate.
+- Failure rates across relevant feature ranges and machine types.
+- A concise, understandable summary of findings.
+
+Inspect the actual dataset before deciding how to preprocess it. Do not assume that all features are numeric or that every column is appropriate for training.
+
+### Target and feature selection
+
+The target is `Machine failure`.
+
+Inspect the actual CSV schema and use its exact column names.
+
+Evaluate sensible predictor features, including machine type and operating measurements where appropriate. Likely measurements include:
+
+- Air temperature
+- Process temperature
+- Rotational speed
+- Torque
+- Tool wear
+
+Treat the machine `Type` column as a potential categorical predictor and evaluate whether it contributes useful predictive information.
+
+Explicitly investigate and exclude columns that would cause target leakage or inappropriate identification-based learning.
+
+In particular:
+
+- Exclude `UDI`, which is an identifier rather than a meaningful operating measurement.
+- Exclude `Product ID` from the default model because it is an identifier and could encourage spurious memorization.
+- Exclude `TWF`, `HDF`, `PWF`, `OSF`, and `RNF` from the predictors of `Machine failure`. These indicate failure subtypes and can directly reveal information about the target.
+- Never include the target column among the predictors.
+- Never use information that would only become available after the failure event.
+
+Document every exclusion and its rationale. If you discover any additional leakage risks, explain and address them.
+
+Build preprocessing with scikit-learn pipelines, using appropriate imputation, categorical encoding, scaling, or other transformations as needed. Fit preprocessing steps only on the relevant training folds. Do not fit encoders, scalers, imputers, or feature-selection steps on the entire dataset before splitting.
+
+# 4. Data splitting and leakage prevention
+
+Create a reproducible, stratified split for a standard independent evaluation:
+
+- 64% training data.
+- 16% validation data.
+- 20% final test data.
+
+Use a fixed random seed and document it.
+
+The training set is for model fitting and cross-validation. The validation set is for model comparison, hyperparameter decisions, probability-threshold selection, and other model-selection decisions. The final test set is reserved for one final, unbiased evaluation after the modeling decisions have been completed.
+
+**Do not repeatedly evaluate the test set to choose a model, tune a threshold, or modify the pipeline.**
+
+Use stratification because machine failure is a minority class. Verify that each split contains both target classes.
+
+If the split or validation set is too small for a reliable conclusion, explain the limitation and propose a statistically defensible alternative. Do not silently change the split just to improve scores.
+
+Use stratified cross-validation within the training set for robust comparisons and hyperparameter tuning. Keep every data-dependent transformation inside the cross-validation pipeline.
+
+Never apply SMOTE, oversampling, undersampling, or any other resampling method before splitting the data. If resampling is considered, apply it only inside training folds and compare it against simpler alternatives.
+
+# 5. Compare multiple algorithms
+
+Do not assume Random Forest, Logistic Regression, or any other algorithm will be the winner.
+
+Build a fair and reproducible comparison of multiple suitable algorithms. At minimum, evaluate:
+
+1. Dummy Classifier as a baseline.
+2. Logistic Regression with appropriate preprocessing and class-weight options.
+3. Random Forest.
+4. Extra Trees.
+5. Gradient Boosting.
+6. Histogram-based Gradient Boosting or another suitable scikit-learn boosting model.
+7. A further suitable algorithm if it provides a meaningful comparison, such as XGBoost, LightGBM, or CatBoost, provided its dependency and deployment compatibility are handled correctly.
+
+Prefer models that can be trained and deployed reliably with the available environment. Do not add dependencies merely to make the project look sophisticated.
+
+For each algorithm:
+
+- Use an appropriate preprocessing pipeline.
+- Establish a sensible baseline before tuning.
+- Tune a reasonable hyperparameter search space using training data and stratified cross-validation.
+- Use a fixed random seed wherever applicable.
+- Consider class imbalance without assuming that oversampling is necessary.
+- Evaluate predicted probabilities, not only hard class labels.
+- Record the selected hyperparameters and cross-validation results.
+- Explain the model's strengths, weaknesses, and computational trade-offs.
+
+Use RandomizedSearchCV or another computationally reasonable tuning approach when exhaustive grid search would be unnecessarily expensive.
+
+Do not create a huge search space that takes hours without justification. Make the project practical to run on a normal student laptop with 16 GB RAM.
+
+If an optional algorithm cannot be installed or is incompatible with the environment, skip it gracefully, document why, and continue with the remaining models. Do not let one optional dependency break the whole project.
+
+## 6. Metrics and model-selection strategy
+
+The dataset is imbalanced. **Accuracy alone must not determine the winning model.**
+
+Report at least the following metrics:
+
+- Precision.
+- Recall.
+- F1-score.
+- Average Precision, used as the primary precision-recall summary metric.
+- ROC-AUC.
+- Balanced accuracy.
+- Confusion matrix.
+- False positives and false negatives.
+- Precision-recall curve.
+- ROC curve.
+- Training and validation performance comparisons where meaningful.
+
+Clearly distinguish average precision from other definitions of PR-AUC if they are calculated.
+
+Report both the default-threshold performance and the performance at the selected operating threshold.
+
+### Selecting the best model
+
+Define a defensible model-selection strategy before looking at final test results.
+
+Compare models using training cross-validation and validation performance, emphasizing:
+
+- The ability to detect actual failures.
+- Precision-recall performance on the minority class.
+- A reasonable trade-off between false negatives and false positives.
+- Generalization between training, cross-validation, and validation.
+- Probability quality and calibration where relevant.
+- Model complexity, inference speed, stability, and deployment practicality.
+
+Do not select a model merely because it has the highest accuracy, ROC-AUC, or a single favorable validation score.
+
+Choose a primary selection criterion appropriate to predictive maintenance and explain why it fits the use case. Use average precision as an important ranking metric, with failure recall and false-alarm burden considered explicitly.
+
+If two models have similar predictive performance, prefer the simpler, more stable, easier-to-deploy model unless the evidence supports the more complex alternative.
+
+Do not claim that a model is universally optimal. State that it is the best candidate among the tested models under the chosen evaluation criteria.
+
+## 7. Overfitting prevention and generalization
+
+Treat overfitting prevention as a core requirement, not an optional enhancement.
+
+Implement and document the following:
+
+- Proper train/validation/test separation.
+- Stratified cross-validation confined to the training set.
+- Pipelines that prevent preprocessing leakage.
+- Reasonable hyperparameter ranges and model complexity.
+- Regularization where appropriate.
+- Tree-depth, leaf-size, and related complexity controls where applicable.
+- Early stopping where supported and appropriate.
+- Comparisons between training, cross-validation, and validation scores.
+- Generalization-gap analysis.
+- Checks for suspiciously perfect performance or unusually large metric jumps.
+- Sensible probability calibration checks if probabilities will be interpreted operationally.
+
+For tree-based models, test whether depth and minimum-leaf constraints improve generalization. For linear models, use appropriate regularization. Do not use every technique on every algorithm without justification.
+
+Do not deliberately force low scores, but do not hide poor generalization either. If a model overfits, report it, investigate it, and prefer a better-generalizing alternative.
+
+Avoid claiming that overfitting has been eliminated. Explain what evidence supports the conclusion that the chosen model generalizes reasonably well.
+
+If the dataset is too small to establish strong real-world reliability, state that clearly.
+
+# 8. Decision-threshold optimization
+
+A default threshold of 0.5 is not necessarily appropriate for machine failure detection.
+
+For each competitive model, evaluate a reasonable range of probability thresholds using **validation data only**.
+
+Produce a threshold-analysis table with:
+
+- Threshold.
+- Precision.
+- Recall.
+- F1-score.
+- False-positive count or rate.
+- False-negative count or rate.
+
+Choose a final threshold using a documented operational objective.
+
+For example, predictive maintenance may prioritize catching failures, but a threshold that flags almost every machine is not useful. Balance missed failures against unnecessary maintenance alerts.
+
+Make the selection rule explicit. If no operational costs are provided, use a reasonable, clearly documented default objective, such as a strong recall-oriented precision-recall trade-off subject to an acceptable precision level when the validation data permits it. If no such constraint can be met, explain the trade-off instead of inventing one.
+
+Do not tune the threshold on the test set.
+
+Save the selected threshold and its rationale with the final model artifacts. Allow the dashboard to display the threshold and explain that different maintenance operations may need different settings.
+
+# 9. Probability calibration and uncertainty
+
+Investigate whether the best model's predicted probabilities are reasonably calibrated.
+
+Where appropriate, compare calibration using validation data and use a suitable calibration method only if it improves the reliability of the probabilities without creating leakage.
+
+Explain the difference between:
+
+- A model's predicted probability.
+- The threshold used to generate a warning.
+- The actual observed failure rate.
+
+Do not describe a prediction as a guaranteed failure or a precise estimate of real-world risk unless the evidence justifies it.
+
+If the dataset is insufficient to support reliable calibration, document the limitation.
+
+# 10. Explainable AI
+
+Make explainability a meaningful feature of the project.
+
+Include:
+
+- Global feature importance for the selected model.
+- Permutation importance calculated using held-out validation data, or another defensible evaluation dataset.
+- Local explanations for individual predictions.
+- Clear explanations of which input measurements influenced a prediction and in what direction, when the chosen explanation method supports that interpretation.
+- An explanation of the limitations of feature importance and correlated predictors.
+
+Optionally support SHAP if it can be integrated reliably and without excessive dependency or performance costs.
+
+If SHAP is unavailable, the project must still work using reliable built-in methods and permutation importance. Do not make SHAP a mandatory dependency.
+
+Do not imply that feature importance proves causation. Do not fabricate feature-importance values or explanations.
+
+For individual predictions, distinguish a model explanation from an engineering diagnosis. The model can identify predictive patterns, but it cannot prove the physical cause of a failure.
+
+# 11. Save and load the final model
+
+Create a reproducible training pipeline that saves the selected model and all required inference metadata.
+
+Save suitable artifacts, such as:
+
+- Trained model pipeline.
+- Selected probability threshold.
+- Model name and configuration.
+- Feature schema and order.
+- Expected input types and preprocessing information.
+- Evaluation metrics.
+- Training configuration and random seed.
+- Dataset version or checksum when practical.
+- Model metadata and training timestamp.
+
+Use a structured artifact directory such as `artifacts/`.
+
+The application must load the saved model once using Streamlit caching. It must not retrain all algorithms every time a user opens the dashboard or changes a field.
+
+Provide separate commands or scripts for:
+
+1. Downloading and validating the dataset.
+2. Exploring the data.
+3. Training and comparing models.
+4. Evaluating the selected model.
+5. Running the Streamlit application.
+6. Running automated tests.
+
+The training process must regenerate the artifacts reproducibly from the documented dataset and configuration.
+
+Do not fabricate metrics or create a fake pretrained model to make the dashboard appear functional.
+
+# 12. Complete Streamlit application
+
+Build a polished, responsive, professional dashboard named **MachineGuard AI** using Streamlit, Plotly, pandas, and scikit-learn where appropriate.
+
+The design should look like a serious industrial analytics tool, not a generic student template. Use a clean dark or neutral industrial visual style, consistent spacing, readable typography, meaningful charts, accessible labels, and clear status indicators.
+
+Create these pages or sections:
+
+### A. Overview Dashboard
+
+Display:
+
+- Project summary.
+- Dataset size and failure distribution.
+- Selected model name.
+- Key validation and final-test metrics, clearly labeled.
+- Number of predictions made in the current session, if tracked.
+- A clear explanation of what the model can and cannot do.
+
+Do not mix validation metrics and test metrics or label one as the other.
+
+### B. Data Explorer
+
+Include:
+
+- Dataset preview.
+- Feature distributions.
+- Target class balance.
+- Missing-value and duplicate analysis.
+- Correlation heatmap where appropriate.
+- Interactive feature selection and filtering.
+- Clear warnings about the difference between historical dataset analysis and real-time machine monitoring.
+
+### C. Model Comparison
+
+Display a comparison table of the tested algorithms, including their cross-validation and validation results.
+
+Include appropriate charts for precision, recall, F1-score, average precision, ROC-AUC, and balanced accuracy.
+
+Show:
+
+- Which model was selected.
+- Why it was selected.
+- Its selected operating threshold.
+- Any signs of overfitting or unstable performance.
+- A link or navigation path to more detailed evaluation results.
+
+Only display metrics actually produced by the training pipeline. If a metric or artifact is missing, show a clear message rather than inventing a value.
+
+### D. Machine Failure Prediction
+
+Provide an interactive form for a single prediction.
+
+Allow the user to enter the available operating measurements and categorical machine type, if used by the final model. Apply reasonable input validation and physically plausible default values derived from the actual dataset.
+
+Display:
+
+- Predicted failure probability.
+- Risk category based on the documented threshold and any clearly documented additional risk bands.
+- Predicted class.
+- The selected threshold.
+- An understandable explanation of the result.
+- Relevant feature contributions or explanation outputs when available.
+
+Make the result visually clear without using alarming colors for every ordinary prediction.
+
+Never label a machine as certainly safe or certainly failing. Use language such as “lower predicted risk” and “elevated predicted risk.”
+
+### E. Batch Prediction
+
+Allow CSV upload for multiple machine records.
+
+Requirements:
+
+- Validate required columns.
+- Match the model's expected feature schema.
+- Handle missing values and invalid types safely.
+- Do not accept target or leakage columns as model features.
+- Provide useful error messages for incompatible files.
+- Generate predictions and probabilities for each valid row.
+- Include the selected threshold and risk label.
+- Allow downloading the output as a CSV file.
+- Preserve a source row identifier for matching predictions to the uploaded rows without feeding identifiers into the model.
+- Report skipped or invalid rows transparently.
+
+Do not silently drop records or fabricate missing input data.
+
+### F. Explainability
+
+Show global feature importance and an explanation for the selected individual prediction.
+
+Explain what the results mean in plain English and state the limitations of the explanation method.
+
+### G. Model Information
+
+Display:
+
+- Dataset source.
+- Model name and configuration.
+- Training date.
+- Feature list.
+- Selected threshold.
+- Cross-validation and validation metrics.
+- Final test metrics, when available.
+- Known limitations.
+- Model version or identifier.
+- A short model card describing intended use, inappropriate use, and known risks.
+
+# 13. Model evaluation and reporting
+
+Create a separate, reproducible evaluation workflow.
+
+Generate:
+
+- Model comparison results in CSV or JSON.
+- Classification reports.
+- Confusion matrices.
+- Precision-recall curves.
+- ROC curves.
+- Threshold analysis.
+- Feature importance results.
+- Overfitting and generalization analysis.
+- A final evaluation report.
+- A model card.
+
+After model selection and threshold tuning are complete, fit the final selected pipeline using the training and validation data together if that is appropriate for the established procedure. Keep the final test set untouched until the final evaluation.
+
+If the selected model or threshold changes after examining test performance, do not silently report the same test results as an unbiased final evaluation. Explain that a new independent test set would be needed for a fresh unbiased estimate.
+
+Be precise about which data was used for each result. Include sample counts and positive-class counts for each split where practical.
+
+Report the results honestly. If the best model performs poorly, say so and investigate possible causes rather than making the results look impressive.
+
+# 14. Project structure
+
+Create a clean and maintainable structure similar to the following, adapting it when justified:
+
+MachineGuard-AI/
+- app.py
+- requirements.txt
+- README.md
+- .gitignore
+- .streamlit/
+  - config.toml
+- data/
+  - README.md
+  - .gitkeep
+- artifacts/
+  - .gitkeep
+- src/
+  - __init__.py
+  - config.py
+  - data_loader.py
+  - preprocessing.py
+  - train.py
+  - evaluate.py
+  - model_selection.py
+  - explainability.py
+  - predict.py
+  - validation.py
+- pages/
+  - 1_Data_Explorer.py
+  - 2_Model_Comparison.py
+  - 3_Predict_Failure.py
+  - 4_Explainability.py
+  - 5_Model_Information.py
+- reports/
+  - .gitkeep
+- tests/
+  - test_data_validation.py
+  - test_preprocessing.py
+  - test_prediction.py
+  - test_artifacts.py
+- scripts/
+  - download_data.py
+  - train_model.py
+  - evaluate_model.py
+
+You may adjust the structure if a different design is more maintainable. Do not create empty placeholder files for features that are claimed to be implemented.
+
+Keep the model training code separate from the Streamlit interface. Use clear function names, type hints where useful, modular code, and comments that explain important decisions rather than narrating every line.
+
+# 15. Testing and reliability
+
+Create automated tests for the important parts of the project.
+
+At minimum, test:
+
+- Dataset schema validation.
+- Target and leakage-column exclusion.
+- Preprocessing and categorical-feature handling.
+- Train/validation/test separation logic.
+- Model artifact saving and loading.
+- Single-record prediction.
+- Batch prediction.
+- Missing and invalid input handling.
+- Threshold-based classification.
+- CSV output generation.
+
+Use small synthetic fixtures for unit tests where appropriate, but never use synthetic data as a replacement for the official dataset in reported model results.
+
+Ensure the application handles missing artifacts, unavailable datasets, corrupted CSV files, and missing optional dependencies gracefully.
+
+Avoid unnecessary global state and brittle file paths. Resolve project paths robustly so that the project works from its root directory on Windows and in a cloud deployment environment.
+
+# 16. Cloud deployment
+
+Prepare the project for **Streamlit Community Cloud** as the initial deployment target.
+
+Official deployment documentation:
+https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app
+
+The project should also be portable enough to support Hugging Face Spaces or another appropriate hosting platform later if needed.
+
+Requirements:
+
+- Provide a compatible `requirements.txt`.
+- Pin or constrain dependencies sensibly to reduce deployment failures.
+- Avoid OS-specific dependencies where possible.
+- Do not use absolute paths from my local computer.
+- Do not require local Anaconda paths to work in the cloud.
+- Ensure the application loads saved artifacts rather than retraining the model on every startup.
+- Keep the repository reasonably small.
+- Do not commit large, unnecessary datasets, caches, temporary files, or personal files.
+- If the model artifact is too large or binary files create deployment issues, provide a clear, reproducible artifact-generation or download workflow.
+- Do not hardcode secrets, API keys, passwords, or credentials.
+- Include exact GitHub upload and Streamlit Community Cloud deployment instructions.
+- Explain the repository entry point, dependency installation, and app configuration.
+- Include a troubleshooting section for common deployment errors.
+
+The deployed application must not depend on the files existing in `D:\Workspace` or on any other local computer path.
+
+If the cloud platform cannot train the model within its resource limits, train it locally and deploy the resulting compatible artifacts. Make the distinction clear.
+
+# 17. README and learning documentation
+
+Write a complete README that covers:
+
+1. Project overview.
+2. Problem statement and motivation.
+3. Dataset source and schema.
+4. Leakage prevention and feature selection.
+5. Preprocessing methodology.
+6. Train/validation/test strategy.
+7. Algorithms evaluated.
+8. Hyperparameter tuning and cross-validation.
+9. Model-selection criteria.
+10. Overfitting prevention.
+11. Evaluation metrics and their meaning.
+12. Threshold optimization.
+13. Explainability.
+14. Project structure.
+15. Windows setup instructions.
+16. Commands to download data and train models.
+17. Commands to run tests.
+18. Commands to launch Streamlit.
+19. GitHub setup and cloud deployment.
+20. Known limitations and possible future improvements.
+
+Use Windows PowerShell commands in the setup guide, because I develop on Windows with VS Code and Anaconda. Also provide platform-neutral instructions where useful.
+
+Assume I want to create the project under:
+
+`D:\Workspace\MachineGuard-AI`
+
+Do not assume that this folder or any existing project files already exist. Create the project from scratch.
+
+If my existing Python environment named `jupyter_env` is available, explain how to activate it. Do not require it if a standard virtual environment works.
+
+Include a concise architecture diagram or Mermaid flowchart illustrating:
+
+Dataset → Validation and EDA → Preprocessing Pipeline → Cross-Validation and Model Comparison → Threshold Selection → Final Test Evaluation → Saved Model Artifacts → Streamlit Application → Cloud Deployment.
+
+# 18. Code quality and implementation constraints
+
+Follow these requirements throughout the project:
+
+- Generate complete, runnable code.
+- Do not provide pseudocode in place of required functionality.
+- Do not use hardcoded performance metrics.
+- Do not invent model results, plots, feature importances, or training logs.
+- Do not silently skip important pipeline stages.
+- Do not use the test set for repeated model selection.
+- Do not leak target or post-failure information into predictors.
+- Do not report training performance as evidence of generalization.
+- Do not claim to have executed commands or tests that you have not actually executed.
+- Do not claim to have modified my local machine or GitHub repository unless that action truly occurred.
+- Do not add unnecessary deep learning, LLMs, or complex architecture just to make the project sound advanced.
+- Do not add a database, authentication system, or external API unless it serves a clearly justified requirement.
+- Prefer maintainable code and reproducible experiments over unnecessary complexity.
+- Explain technical decisions in language a third-year ML student can understand.
+- Keep the application usable even if an optional explainability package is unavailable.
+
+# 19. Required execution workflow
+
+Follow this sequence instead of generating a flashy dashboard before building the ML system.
+
+**Phase 1: Project setup**
+- Create the directory structure.
+- Set up dependencies and configuration.
+- Implement dataset acquisition and validation.
+
+**Phase 2: Data analysis**
+- Inspect the official dataset.
+- Verify the schema and target.
+- Identify leakage risks.
+- Implement EDA and preprocessing.
+
+**Phase 3: Baseline and model comparison**
+- Create the data splits.
+- Train a dummy baseline and multiple candidate models.
+- Perform training-only cross-validation and reasonable tuning.
+- Compare validation performance.
+- Investigate generalization gaps.
+
+**Phase 4: Model selection**
+- Choose a model based on the documented selection criteria.
+- Tune the operating threshold on validation data.
+- Evaluate probability calibration if appropriate.
+- Record the rationale and configuration.
+
+**Phase 5: Final evaluation**
+- Finalize the modeling procedure without using the test set for further selection.
+- Fit the final pipeline according to the documented protocol.
+- Evaluate once on the held-out test set.
+- Save the real evaluation outputs and model artifacts.
+
+**Phase 6: Application**
+- Build the dashboard around the actual trained artifacts.
+- Implement single and batch prediction.
+- Add model comparison, explainability, and model information.
+- Handle errors and invalid inputs.
+
+**Phase 7: Testing and deployment**
+- Run tests and fix issues.
+- Validate the complete workflow from raw dataset to prediction.
+- Verify that a fresh installation can reproduce the training pipeline.
+- Prepare the GitHub repository and Streamlit deployment instructions.
+
+# 20. Deliverables and acceptance criteria
+
+I expect all of the following:
+
+1. Complete project source code.
+2. Dataset download and validation scripts.
+3. EDA and preprocessing pipeline.
+4. Multiple-model training and comparison pipeline.
+5. Cross-validation and hyperparameter tuning.
+6. Overfitting and generalization analysis.
+7. Validation-based threshold selection.
+8. Final held-out test evaluation.
+9. Saved model and inference metadata.
+10. Working Streamlit dashboard.
+11. Single-record and batch CSV predictions.
+12. Global and local explainability where supported.
+13. Automated tests.
+14. Requirements file.
+15. Complete README and Windows commands.
+16. Cloud deployment configuration and instructions.
+17. A final report with actual measured results.
+18. A model card describing intended use and limitations.
+
+The project is complete only when the source code, model pipeline, evaluation workflow, dashboard, tests, and deployment instructions fit together coherently.
+
+## Final instructions
+
+Start by creating the complete project from scratch. Do not ask me to provide an existing codebase or assume that any local files already exist.
+
+If you can create project files in your environment, create the actual files rather than merely describing them. If you can execute Python, install dependencies, or run tests, do so where supported and report exactly what succeeded and what failed. If you cannot execute the code or access the official dataset, state the limitation and still provide the complete source code and precise local execution instructions.
+
+If your environment supports generating a ZIP archive, package the complete project into `MachineGuard-AI.zip`. Include source code and documentation, and include trained artifacts or the dataset only when they were genuinely generated or downloaded and are appropriate to distribute. Never place fabricated results or dummy model files in the archive.
+
+At the end, provide:
+
+- The final project directory tree.
+- The exact setup commands for Windows PowerShell.
+- The exact commands for downloading data, training models, running tests, and launching the application.
+- A summary of the algorithms compared and the actual selected model, if training was successfully executed.
+- The actual validation and test metrics, clearly distinguished.
+- Any known limitations or failed steps.
+- Step-by-step GitHub and cloud deployment instructions.
+
+**The priority order is: data integrity → leakage prevention → generalization → reliable failure detection → honest evaluation → explainability → usability → deployment.**
+
+Do not sacrifice the earlier requirements to make the dashboard or reported metrics look impressive. Build the strongest defensible project the data supports, and show the evidence behind every important modeling decision.

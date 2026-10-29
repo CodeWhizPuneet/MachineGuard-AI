@@ -1,0 +1,23 @@
+# MachineGuard AI - Production Requirements
+# End-to-End Explainable Predictive Maintenance System
+
+# Core Data Science & Scientific Computing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scipy>=1.10.0,<2.0.0
+
+# Machine Learning & MLOps
+scikit-learn>=1.3.0,<1.6.0
+joblib>=1.3.0
+
+# Visualization & Interactive Dashboard
+streamlit>=1.30.0,<1.40.0
+plotly>=5.18.0,<6.0.0
+
+# Optional Explainability
+# Note: MachineGuard AI includes native model-agnostic permutation importance and tree contribution methods
+# SHAP is supported when installed
+shap>=0.43.0; python_version < '3.12'
+
+# Testing & Code Quality
+pytest>=7.4.0
