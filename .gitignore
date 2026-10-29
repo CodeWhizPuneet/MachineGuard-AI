@@ -3,7 +3,7 @@ build/
 dist/
 coverage/
 .pytest_cache/
-.pycache__/
+__pycache__/
 .aistudio/
 *.zip
 .DS_Store
